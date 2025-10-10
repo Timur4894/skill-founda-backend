@@ -1,4 +1,5 @@
-import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { Roadmap } from "src/roadmap/entities/roadmap.entity";
+import { Column, Entity, OneToOne, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity()
 export class User {
@@ -7,7 +8,6 @@ export class User {
 
     @Column({unique: true})
     username: string;
-
 
     @Column({unique: true})
     email: string;
@@ -18,6 +18,9 @@ export class User {
     @Column()
     password: string;
 
-    @Column()
+    @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
     createdAt: Date;
+
+    @OneToOne(() => Roadmap, roadmap => roadmap.user)
+    roadmap: Roadmap;
 }
