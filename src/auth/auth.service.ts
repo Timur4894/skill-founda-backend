@@ -2,10 +2,10 @@ import { Injectable, UnauthorizedException, BadRequestException, NotFoundExcepti
 import { CreateAuthDto } from './dto/create-auth.dto';
 import { LoginAuthDto } from './dto/login-auth.dto';
 import { JwtService } from '@nestjs/jwt';
-import { UserService } from 'src/user/user.service';
+import { UserService } from '../user/user.service';
 import * as bcrypt from 'bcrypt';
 import { ResetPasswordDto } from './dto/reset-password.dto';
-import { EmailService } from 'src/shared/email.service';
+import { EmailService } from '../shared/email.service';
 
 @Injectable()
 export class AuthService {
