@@ -3,8 +3,8 @@ import { Column, Entity, OneToOne, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity()
 export class User {
-    @PrimaryGeneratedColumn()
-    id: number;
+    @PrimaryGeneratedColumn('uuid', { name: 'user_id' })
+    id: string;
 
     @Column({unique: true})
     username: string;
@@ -18,7 +18,7 @@ export class User {
     @Column()
     password: string;
 
-    @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
+    @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' , name: 'created_at'})
     createdAt: Date;
 
     @OneToOne(() => Roadmap, roadmap => roadmap.user)

@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
+import { EmailService } from './email.service';
 
 @Module({
   imports: [
@@ -8,6 +9,7 @@ import { JwtModule } from '@nestjs/jwt';
       signOptions: { expiresIn: '24h' },
     }),
   ],
-  exports: [JwtModule],
+  providers: [EmailService],
+  exports: [JwtModule, EmailService],
 })
 export class SharedModule {}

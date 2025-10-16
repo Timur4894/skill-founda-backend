@@ -13,25 +13,38 @@ import { AuthModule } from './auth/auth.module';
 import { RoadmapModule } from './roadmap/roadmap.module';
 import { ProgressModule } from './progress/progress.module';
 import { AiModule } from './ai/ai.module';
+import { SupabaseModule } from './supabase/ supabase.module';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
   imports: [
+    ConfigModule.forRoot({
+      isGlobal: true,
+    }),
     TypeOrmModule.forRoot({
         type: 'postgres',
-        host: 'localhost',
-        port: 5432,
-        username: 'timurlatus',
-        password: '556055',
-        database: 'myapp',
+        host: process.env.DB_HOST || 'localhost',
+        port: Number(process.env.DB_PORT) || 5432,
+        username: process.env.DB_USERNAME || 'timurlatus',
+        password: process.env.DB_PASSWORD || '556055',
+        database: process.env.DB_DATABASE || 'myapp',
         entities: [User, Roadmap, RoadmapItem, Task, Documentation, Resource],
-        synchronize: true,
+        synchronize: false,
+        ssl: { rejectUnauthorized: false },
       }),
     UserModule,
     AuthModule,
     RoadmapModule,
     ProgressModule,
-    AiModule],
+    AiModule,
+    SupabaseModule,
+  ],
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {}
+
+export class AppModule {
+  constructor() {
+    console.log(`📦 Connected to DB: ${process.env.DB_HOST}`);
+  }
+}
