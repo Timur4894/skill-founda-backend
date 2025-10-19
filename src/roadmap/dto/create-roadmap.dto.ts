@@ -1,5 +1,12 @@
+import { IsNotEmpty, IsString, IsOptional, MinLength } from 'class-validator';
+
 export class CreateRoadmapDto {
-  userId: number;
+  @IsNotEmpty()
+  @IsString()
+  @MinLength(3)
   title: string;
+
+  @IsOptional()
+  @IsString()
   description?: string;
 }

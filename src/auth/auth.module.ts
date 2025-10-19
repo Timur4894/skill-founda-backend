@@ -10,7 +10,7 @@ import { SharedModule } from '../shared/shared.module';
     UserModule,
     SharedModule,
     JwtModule.register({
-      secret: process.env.JWT_SECRET || 'your-secret-key',
+      secret: process.env.JWT_SECRET || 'super_secret_key_REPLACELATER',
       signOptions: { expiresIn: '24h' },
     }),
   ],
