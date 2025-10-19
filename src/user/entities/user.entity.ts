@@ -15,6 +15,12 @@ export class User {
     @Column({nullable: true})
     profilePicture: string;
 
+    @Column({nullable: true, type: 'text'})
+    bio: string;
+
+    @Column({nullable: true, type: 'simple-array'})
+    skills: string[];
+
     @Column()
     password: string;
 

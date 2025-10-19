@@ -2,7 +2,7 @@
 
 ## Base URL
 ```
-https://your-vercel-app.vercel.app
+http://localhost:3001
 ```
 
 ## 🔐 Authentication
@@ -19,15 +19,22 @@ https://your-vercel-app.vercel.app
 }
 ```
 
+**Validation Rules:**
+- `username`: Minimum 3 characters
+- `email`: Must be a valid email format
+- `password`: Minimum 6 characters
+
 **Response:**
 ```json
 {
   "user": {
-    "id": "uuid",
+    "id": "ae7125cf-0a60-45e5-a75a-6335514dbfe9",
     "username": "john_doe",
     "email": "john@example.com",
-    "createdAt": "2024-01-01T00:00:00.000Z",
-    "updatedAt": "2024-01-01T00:00:00.000Z"
+    "profilePicture": null,
+    "bio": null,
+    "skills": null,
+    "createdAt": "2024-01-01T00:00:00.000Z"
   },
   "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
 }
@@ -48,11 +55,13 @@ https://your-vercel-app.vercel.app
 ```json
 {
   "user": {
-    "id": "uuid",
+    "id": "ae7125cf-0a60-45e5-a75a-6335514dbfe9",
     "username": "john_doe",
     "email": "john@example.com",
-    "createdAt": "2024-01-01T00:00:00.000Z",
-    "updatedAt": "2024-01-01T00:00:00.000Z"
+    "profilePicture": null,
+    "bio": null,
+    "skills": null,
+    "createdAt": "2024-01-01T00:00:00.000Z"
   },
   "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
 }
@@ -75,6 +84,8 @@ https://your-vercel-app.vercel.app
 }
 ```
 
+**Note:** A new password will be generated and sent to the user's email address. The user should change this password after logging in.
+
 ## 👤 User Management
 
 ### 4. Get All Users
@@ -84,11 +95,13 @@ https://your-vercel-app.vercel.app
 ```json
 [
   {
-    "id": "uuid",
+    "id": "ae7125cf-0a60-45e5-a75a-6335514dbfe9",
     "username": "john_doe",
     "email": "john@example.com",
-    "createdAt": "2024-01-01T00:00:00.000Z",
-    "updatedAt": "2024-01-01T00:00:00.000Z"
+    "profilePicture": null,
+    "bio": "Full-stack developer with 5 years of experience",
+    "skills": ["JavaScript", "React", "Node.js", "PostgreSQL"],
+    "createdAt": "2024-01-01T00:00:00.000Z"
   }
 ]
 ```
@@ -102,11 +115,13 @@ https://your-vercel-app.vercel.app
 **Response:**
 ```json
 {
-  "id": "uuid",
+  "id": "ae7125cf-0a60-45e5-a75a-6335514dbfe9",
   "username": "john_doe",
   "email": "john@example.com",
-  "createdAt": "2024-01-01T00:00:00.000Z",
-  "updatedAt": "2024-01-01T00:00:00.000Z"
+  "profilePicture": "https://example.com/avatar.jpg",
+  "bio": "Full-stack developer with 5 years of experience",
+  "skills": ["JavaScript", "React", "Node.js", "PostgreSQL"],
+  "createdAt": "2024-01-01T00:00:00.000Z"
 }
 ```
 
@@ -121,13 +136,92 @@ Authorization: Bearer <your-jwt-token>
 **Response:**
 ```json
 {
-  "id": "uuid",
+  "id": "ae7125cf-0a60-45e5-a75a-6335514dbfe9",
   "username": "john_doe",
   "email": "john@example.com",
-  "createdAt": "2024-01-01T00:00:00.000Z",
-  "updatedAt": "2024-01-01T00:00:00.000Z"
+  "profilePicture": "https://example.com/avatar.jpg",
+  "bio": "Full-stack developer with 5 years of experience",
+  "skills": ["JavaScript", "React", "Node.js", "PostgreSQL"],
+  "createdAt": "2024-01-01T00:00:00.000Z"
 }
 ```
+
+### 7. Update Current User Profile (Protected)
+**PATCH** `/user/update-me`
+
+**Headers:**
+```
+Authorization: Bearer <your-jwt-token>
+Content-Type: application/json
+```
+
+**Request Body (All fields are optional):**
+```json
+{
+  "username": "new_username",
+  "email": "newemail@example.com",
+  "profilePicture": "https://example.com/new-avatar.jpg",
+  "bio": "Updated bio description",
+  "skills": ["JavaScript", "TypeScript", "React", "Node.js", "Docker"]
+}
+```
+
+**Examples of partial updates:**
+
+Update only bio:
+```json
+{
+  "bio": "I'm a passionate developer who loves creating amazing web applications"
+}
+```
+
+Update only skills:
+```json
+{
+  "skills": ["React", "Vue.js", "CSS", "Figma"]
+}
+```
+
+Update username and profile picture:
+```json
+{
+  "username": "john_developer",
+  "profilePicture": "https://example.com/avatar.jpg"
+}
+```
+
+**Response:**
+```json
+{
+  "affected": 1,
+  "generatedMaps": [],
+  "raw": []
+}
+```
+
+**Validation Rules:**
+- `username`: Minimum 3 characters (optional)
+- `email`: Must be a valid email format (optional)
+- `profilePicture`: String (optional)
+- `bio`: String (optional)
+- `skills`: Array of strings (optional)
+
+### 8. Delete Current User Account (Protected)
+**DELETE** `/user/delete-me`
+
+**Headers:**
+```
+Authorization: Bearer <your-jwt-token>
+```
+
+**Response:**
+```json
+{
+  "message": "User deleted successfully"
+}
+```
+
+**Note:** This action is irreversible. The user account and all associated data will be permanently deleted.
 
 ## 📊 Roadmap (Coming Soon)
 **GET** `/roadmap`
@@ -170,13 +264,25 @@ Authorization: Bearer <your-jwt-token>
 }
 ```
 
+### 422 Unprocessable Entity (Validation Error)
+```json
+{
+  "statusCode": 422,
+  "message": [
+    "username must be longer than or equal to 3 characters",
+    "email must be an email"
+  ],
+  "error": "Unprocessable Entity"
+}
+```
+
 ## 📝 Postman Collection Setup
 
 ### Environment Variables
 Create a new environment in Postman with these variables:
 
 ```
-base_url: https://your-vercel-app.vercel.app
+base_url: http://localhost:3001
 token: {{jwt_token_from_login}}
 ```
 
@@ -190,19 +296,52 @@ Authorization: Bearer {{token}}
 
 1. **Register a new user** using `/auth/register`
 2. **Login** using `/auth/login` and save the token
-3. **Test protected routes** using the saved token
-4. **Test password reset** using `/auth/reset-password`
+3. **Get your profile** using `/user/get-me`
+4. **Update your profile** using `/user/update-me` (try partial updates)
+5. **Test password reset** using `/auth/reset-password`
+6. **Delete your account** using `/user/delete-me` (if needed)
 
-## 📋 Validation Rules
+## 📋 User Profile Fields
 
-### Registration/Login
-- `email`: Must be a valid email format
-- `username`: Minimum 6 characters
-- `password`: Minimum 6 characters
+### Required Fields (Registration)
+- `username`: Unique username (min 3 characters)
+- `email`: Valid email address (unique)
+- `password`: Password (min 6 characters)
 
-### Password Reset
-- `email`: Must be a valid email format
+### Optional Fields (Can be updated later)
+- `profilePicture`: URL to profile image
+- `bio`: Text description of the user
+- `skills`: Array of skill strings
+
+## 🔒 Security Features
+
+- **JWT Authentication**: All protected routes require valid JWT token
+- **Self-service only**: Users can only update/delete their own accounts
+- **Password hashing**: Passwords are securely hashed using bcrypt
+- **Email validation**: All email fields are validated
+- **Input validation**: All inputs are validated using class-validator
+
+## 📧 Email Configuration
+
+The API supports email sending for password reset functionality. Configure these environment variables:
+
+```env
+SMTP_HOST=smtp.gmail.com
+SMTP_PORT=587
+SMTP_SECURE=false
+SMTP_USER=your_email@gmail.com
+SMTP_PASS=your_app_password
+SMTP_FROM=your_email@gmail.com
+```
+
+## 🚀 Development Setup
+
+1. **Install dependencies**: `npm install`
+2. **Set up environment variables**: Create `.env` file
+3. **Start development server**: `npm run start:dev`
+4. **Build for production**: `npm run build`
+5. **Start production server**: `npm run start:prod`
 
 ---
 
-**Note:** Replace `https://your-vercel-app.vercel.app` with your actual Vercel deployment URL.
+**Note:** Replace `http://localhost:3001` with your actual deployment URL when deploying to production.
