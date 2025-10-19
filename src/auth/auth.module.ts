@@ -9,6 +9,10 @@ import { SharedModule } from '../shared/shared.module';
   imports: [
     UserModule,
     SharedModule,
+    JwtModule.register({
+      secret: process.env.JWT_SECRET || 'your-secret-key',
+      signOptions: { expiresIn: '24h' },
+    }),
   ],
   providers: [AuthService],
   controllers: [AuthController]

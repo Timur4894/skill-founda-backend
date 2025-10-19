@@ -5,7 +5,7 @@ import { EmailService } from './email.service';
 @Module({
   imports: [
     JwtModule.register({
-      secret: 'super_secret_key_REPLACELATER',
+      secret: process.env.JWT_SECRET || 'super_secret_key_REPLACELATER',
       signOptions: { expiresIn: '24h' },
     }),
   ],

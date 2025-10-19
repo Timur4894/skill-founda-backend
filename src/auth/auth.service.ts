@@ -58,7 +58,6 @@ export class AuthService {
       const hashedPassword = await bcrypt.hash(newPassword, 10);
       await this.userService.updatePassword(user.id, hashedPassword);
   
-      // Отправляем новый пароль на email
       await this.emailService.sendPasswordResetEmail(email, newPassword);
   
       return { message: 'New password sent to your email' };

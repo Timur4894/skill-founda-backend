@@ -7,10 +7,8 @@ async function bootstrap() {
   app.useGlobalPipes(new ValidationPipe());
   app.enableCors({
     origin: (origin, callback) => {
-      // Разрешаем запросы без origin (например, мобильные приложения, Postman)
       if (!origin) return callback(null, true);
       
-      // Разрешаем все localhost и 127.0.0.1 порты для разработки
       const allowedOrigins = [
         /^http:\/\/localhost:\d+$/,
         /^http:\/\/127\.0\.0\.1:\d+$/,
