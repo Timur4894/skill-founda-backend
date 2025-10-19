@@ -44,11 +44,4 @@ import { ConfigModule } from '@nestjs/config';
   providers: [AppService],
 })
 
-export class AppModule {
-  constructor() {
-    console.log(`📦 Connected to DB: ${process.env.DB_HOST}`);
-    console.log(`🔑 SUPABASE_URL: ${process.env.SUPABASE_URL ? 'SET' : 'NOT SET'}`);
-    console.log(`🔑 SUPABASE_KEY: ${process.env.SUPABASE_KEY ? 'SET' : 'NOT SET'}`);
-    console.log(`🔑 JWT_SECRET: ${process.env.JWT_SECRET ? 'SET' : 'NOT SET'}`);
-  }
-}
+export class AppModule {}

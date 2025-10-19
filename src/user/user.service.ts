@@ -70,7 +70,13 @@ export class UserService {
   //   return this.userRepository.update(id, updateUserDto);
   // }
 
-  // remove(id: number) {
-  //   return this.userRepository.delete(id);
-  // }
+  async remove(id: string) {
+    const user = await this.userRepository.findOne({ where: { id } });
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+    
+    await this.userRepository.delete(id);
+    return { message: 'User deleted successfully' };
+  }
 }

@@ -20,8 +20,8 @@ export class UserController {
 
   @Get('get-me')
   @UseGuards(JwtAuthGuard)
-  getMe(@Req() req: Request) {
-    return this.userService.getMe(req);
+  getMe(@Req() req: any) {
+    return this.userService.getMe(req.user);
   }
 
   // @Patch(':id')
@@ -29,8 +29,10 @@ export class UserController {
   //   return this.userService.update(+id, updateUserDto);
   // }
 
-  // @Delete(':id')
-  // remove(@Param('id') id: string) {
-  //   return this.userService.remove(+id);
-  // }
+
+  @Delete('delete-me')
+  @UseGuards(JwtAuthGuard)
+  removeMe(@Req() req: any) {
+    return this.userService.remove(req.user.id);
+  }
 }
