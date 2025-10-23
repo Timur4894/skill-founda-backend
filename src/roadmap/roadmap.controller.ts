@@ -12,7 +12,7 @@ import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 export class RoadmapController {
   constructor(private readonly roadmapService: RoadmapService) {}
 
-  // ========== ROADMAP ENDPOINTS ==========
+  // ========== ROADMAP ENDPOINTS =========
 
   @Post('create')
   async createRoadmap(@Req() req: any, @Body() createRoadmapDto: CreateRoadmapDto) {
