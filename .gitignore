@@ -3,6 +3,12 @@
 /node_modules
 /build
 
+#
+Skill_Foundation_API.postman_collection.json
+Skill_Foundation_Environment.postman_environment.json
+POSTMAN_COLLECTION_GUIDE.md
+API_DOCUMENTATION.md
+
 # Logs
 logs
 *.log
