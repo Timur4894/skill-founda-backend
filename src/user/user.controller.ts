@@ -4,6 +4,7 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { UpdateUserDto } from './dto/update-user.dto';
 
+@UseGuards(JwtAuthGuard)
 @Controller('user')
 export class UserController {
   constructor(private readonly userService: UserService) {}
@@ -20,20 +21,16 @@ export class UserController {
   }
 
   @Get('get-me')
-  @UseGuards(JwtAuthGuard)
   getMe(@Req() req: any) {
     return this.userService.getMe(req.user);
   }
 
   @Patch('update-me')
-  @UseGuards(JwtAuthGuard)
   async updateMe(@Req() req: any, @Body() updateUserDto: UpdateUserDto) {
     return this.userService.update(req.user.id, updateUserDto);
   }
 
-
   @Delete('delete-me')
-  @UseGuards(JwtAuthGuard)
   removeMe(@Req() req: any) {
     return this.userService.remove(req.user.id);
   }

@@ -15,4 +15,7 @@ export class Documentation {
 
   @ManyToOne(() => RoadmapItem, item => item.documentations)
   roadmapItem: RoadmapItem;
+
+  @Column({ default: false })
+  completed: boolean;
 }

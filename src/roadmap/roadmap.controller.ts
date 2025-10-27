@@ -85,4 +85,21 @@ export class RoadmapController {
   async deleteRoadmapItem(@Req() req: any, @Param('id', ParseIntPipe) id: number) {
     return this.roadmapService.deleteRoadmapItem(id, req.user.id);
   }
+
+  // ========== TASK ENDPOINTS ==========
+
+  @Patch('tasks/:id/mark-as-completed')
+  async markTaskAsCompleted(@Req() req: any, @Param('id', ParseIntPipe) id: number) {
+    return this.roadmapService.markTaskAsCompleted(id, req.user.id);
+  }
+
+  @Patch('resource/:id/mark-as-completed')
+  async markSourseAsCompleted(@Req() req: any, @Param('id', ParseIntPipe) id: number) {
+    return this.roadmapService.markResourceAsCompleted(id, req.user.id);
+  }
+
+  @Patch('documentation/:id/mark-as-completed')
+  async markDocumentationAsCompleted(@Req() req: any, @Param('id', ParseIntPipe) id: number) {
+    return this.roadmapService.markDocumentationAsCompleted(id, req.user.id);
+  }
 }

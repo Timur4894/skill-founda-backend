@@ -16,4 +16,7 @@ export class Resource {
 
   @ManyToOne(() => RoadmapItem, item => item.resources)
   roadmapItem: RoadmapItem;
+
+  @Column({ default: false })
+  completed: boolean;
 }

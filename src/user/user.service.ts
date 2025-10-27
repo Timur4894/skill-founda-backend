@@ -5,12 +5,14 @@ import { User } from './entities/user.entity';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import * as bcrypt from 'bcrypt';
+import { RoadmapService } from '../roadmap/roadmap.service';
 
 @Injectable()
 export class UserService {
   constructor(
     @InjectRepository(User)
     private userRepository: Repository<User>,
+    private roadmapService: RoadmapService,
   ) {}
 
   async create(createUserDto: CreateUserDto) {
@@ -82,9 +84,19 @@ export class UserService {
   
 
   async remove(id: string) {
-    const user = await this.userRepository.findOne({ where: { id } });
+    const user = await this.userRepository.findOne({ 
+      where: { id },
+      relations: ['roadmap'] 
+    });
+    
     if (!user) {
       throw new NotFoundException('User not found');
+    }
+    
+    const roadmaps = await this.roadmapService.findAllRoadmaps(id);
+    
+    for (const roadmap of roadmaps) {
+      await this.roadmapService.deleteRoadmap(roadmap.id, id);
     }
     
     await this.userRepository.delete(id);

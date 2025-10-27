@@ -1,5 +1,5 @@
 import { Roadmap } from "src/roadmap/entities/roadmap.entity";
-import { Column, Entity, OneToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity()
 export class User {
@@ -27,6 +27,6 @@ export class User {
     @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' , name: 'created_at'})
     createdAt: Date;
 
-    @OneToOne(() => Roadmap, roadmap => roadmap.user)
+    @OneToMany(() => Roadmap, roadmap => roadmap.user, { cascade: true })
     roadmap: Roadmap;
 }

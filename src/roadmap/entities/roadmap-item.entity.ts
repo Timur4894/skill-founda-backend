@@ -18,15 +18,18 @@ export class RoadmapItem {
   @Column({ default: 0 })
   order: number;
 
-  @OneToMany(() => Task, task => task.roadmapItem)
+  @OneToMany(() => Task, task => task.roadmapItem, { cascade: true })
   tasks: Task[];
 
-  @OneToMany(() => Resource, resource => resource.roadmapItem)
+  @OneToMany(() => Resource, resource => resource.roadmapItem, { cascade: true })
   resources: Resource[];
 
-  @OneToMany(() => Documentation, doc => doc.roadmapItem)
+  @OneToMany(() => Documentation, doc => doc.roadmapItem, { cascade: true })
   documentations: Documentation[];
 
   @ManyToOne(() => Roadmap, roadmap => roadmap.items)
   roadmap: Roadmap;
+
+  @Column({ default: false })
+  completed: boolean;
 }

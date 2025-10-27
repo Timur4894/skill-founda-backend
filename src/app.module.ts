@@ -9,6 +9,7 @@ import { RoadmapItem } from './roadmap/entities/roadmap-item.entity';
 import { Task } from './roadmap/entities/task.entity';
 import { Documentation } from './roadmap/entities/documentation.entity';
 import { Resource } from './roadmap/entities/resource.entity';
+import { Progress } from './progress/entities/progress.entity';
 import { AuthModule } from './auth/auth.module';
 import { RoadmapModule } from './roadmap/roadmap.module';
 import { ProgressModule } from './progress/progress.module';
@@ -28,7 +29,7 @@ import { ConfigModule } from '@nestjs/config';
         username: process.env.DB_USERNAME || 'timurlatus',
         password: process.env.DB_PASSWORD || '556055',
         database: process.env.DB_DATABASE || 'myapp',
-        entities: [User, Roadmap, RoadmapItem, Task, Documentation, Resource],
+        entities: [User, Roadmap, RoadmapItem, Task, Documentation, Resource, Progress],
         synchronize: true,
         autoLoadEntities: true,
         ssl: { rejectUnauthorized: false },
