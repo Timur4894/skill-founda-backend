@@ -77,25 +77,20 @@ export class RoadmapService {
   async deleteRoadmap(id: number, userId: string): Promise<{ message: string }> {
     const roadmap = await this.findRoadmapById(id, userId);
     
-    // Получаем все элементы роадмапа
     const roadmapItems = await this.roadmapItemRepository.find({
       where: { roadmap: { id } }
     });
     
-    // Удаляем задачи, ресурсы и документацию для каждого элемента
     for (const item of roadmapItems) {
       await this.taskRepository.delete({ roadmapItem: { id: item.id } });
       await this.resourceRepository.delete({ roadmapItem: { id: item.id } });
       await this.documentationRepository.delete({ roadmapItem: { id: item.id } });
     }
     
-    // Удаляем элементы роадмапа
     await this.roadmapItemRepository.delete({ roadmap: { id } });
     
-    // Удаляем прогресс
     await this.progressRepository.delete({ roadmapId: id });
     
-    // Удаляем сам роадмап
     await this.roadmapRepository.delete(id);
     
     return { message: 'Roadmap deleted successfully' };
@@ -146,7 +141,6 @@ export class RoadmapService {
           }
         }
 
-        // Создаем ресурсы
         if (itemData.resources && itemData.resources.length > 0) {
           for (const resourceData of itemData.resources) {
             const resource = this.resourceRepository.create({
@@ -247,13 +241,15 @@ export class RoadmapService {
   }
 
   async markResourceAsCompleted(id: number, userId: string): Promise<{ message: string }> {
-    const sourse = await this.resourceRepository.findOne({ where: { id, roadmapItem: { roadmap: { user: { id: userId } } } } });
-    if (!sourse) {
-      throw new NotFoundException('Task not found');
+    const resource = await this.resourceRepository.findOne({ 
+      where: { id, roadmapItem: { roadmap: { user: { id: userId } } } } 
+    });
+    if (!resource) {
+      throw new NotFoundException('Resource not found');
     }
-    sourse.completed = true;
-    await this.taskRepository.save(sourse);
-    return { message: 'Task marked as completed' };
+    resource.completed = true;
+    await this.resourceRepository.save(resource);
+    return { message: 'Resource marked as completed' };
   }
 
   async markDocumentationAsCompleted(id: number, userId: string): Promise<{ message: string }> {

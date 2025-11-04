@@ -58,7 +58,7 @@ export class ProgressService {
         
         const progress = this.progressRepository.create({
             roadmapId,
-            totalPercentage: 0,
+            totalPercentage: 10,
             totalTasks: 0,
             totalResources: 0,
             totalDocumentation: 0,
