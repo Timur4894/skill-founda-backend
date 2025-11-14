@@ -1,0 +1,785 @@
+{
+  "info": {
+    "name": "Skill Foundation API - Complete Documentation",
+    "description": "Complete API collection for Skill Foundation platform with full documentation. Includes authentication, user management, roadmap management, progress tracking, and AI generation features.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "version": "2.0.0"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:3000",
+      "type": "string",
+      "description": "Base URL for the API server"
+    },
+    {
+      "key": "token",
+      "value": "",
+      "type": "string",
+      "description": "JWT authentication token (automatically set after login)"
+    }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{token}}",
+        "type": "string"
+      }
+    ]
+  },
+  "item": [
+    {
+      "name": "🔐 Authentication",
+      "description": "Endpoints for user authentication and registration",
+      "item": [
+        {
+          "name": "Register User",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"john_doe\",\n  \"email\": \"john@example.com\",\n  \"password\": \"password123\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/register",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "register"]
+            },
+            "description": "Register a new user account.\n\n**Required fields:**\n- `username`: Unique username (min 3 characters)\n- `email`: Valid email address (unique)\n- `password`: Password (min 6 characters)\n\n**Response:** Returns user object with JWT token"
+          },
+          "response": []
+        },
+        {
+          "name": "Login User",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    pm.collectionVariables.set('token', response.access_token);",
+                  "    console.log('Token saved:', response.access_token);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"john@example.com\",\n  \"password\": \"password123\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/login",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "login"]
+            },
+            "description": "Login with email and password.\n\n**Required fields:**\n- `email`: User email address\n- `password`: User password\n\n**Response:** Returns JWT access token (automatically saved to collection variable)\n\n**Note:** Token is automatically saved and used for subsequent requests"
+          },
+          "response": []
+        },
+        {
+          "name": "Reset Password",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"john@example.com\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/reset-password",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "reset-password"]
+            },
+            "description": "Request password reset email.\n\n**Required fields:**\n- `email`: User email address\n\n**Response:** Sends password reset email to the user"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "👤 User Management",
+      "description": "Endpoints for user profile management",
+      "item": [
+        {
+          "name": "Get All Users",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/user/get-all-users",
+              "host": ["{{base_url}}"],
+              "path": ["user", "get-all-users"]
+            },
+            "description": "Get list of all users in the system.\n\n**Authentication:** Not required\n\n**Response:** Returns array of user objects (without passwords)"
+          },
+          "response": []
+        },
+        {
+          "name": "Get User by ID",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/user/get-user/:id",
+              "host": ["{{base_url}}"],
+              "path": ["user", "get-user", ":id"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "ae7125cf-0a60-45e5-a75a-6335514dbfe9"
+                }
+              ]
+            },
+            "description": "Get user information by ID.\n\n**Parameters:**\n- `id`: User UUID\n\n**Authentication:** Not required\n\n**Response:** Returns user object"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Current User",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/user/get-me",
+              "host": ["{{base_url}}"],
+              "path": ["user", "get-me"]
+            },
+            "description": "Get current authenticated user's profile.\n\n**Authentication:** Required (JWT token)\n\n**Response:** Returns current user's profile information"
+          },
+          "response": []
+        },
+        {
+          "name": "Update Profile",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"new_username\",\n  \"bio\": \"I'm a passionate developer\",\n  \"skills\": [\"JavaScript\", \"React\", \"Node.js\"],\n  \"profilePicture\": \"https://example.com/avatar.jpg\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/user/update-me",
+              "host": ["{{base_url}}"],
+              "path": ["user", "update-me"]
+            },
+            "description": "Update current user's profile.\n\n**Authentication:** Required (JWT token)\n\n**Optional fields:**\n- `username`: New username\n- `bio`: User biography\n- `skills`: Array of skill strings\n- `profilePicture`: URL to profile picture\n\n**Response:** Returns updated user object"
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Account",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/user/delete-me",
+              "host": ["{{base_url}}"],
+              "path": ["user", "delete-me"]
+            },
+            "description": "Delete current user's account.\n\n**Authentication:** Required (JWT token)\n\n**Warning:** This will permanently delete:\n- User account\n- All user's roadmaps\n- All roadmap items, tasks, resources, and documentation\n- All progress data\n\n**Response:** Success message"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "🗺️ Roadmap Management",
+      "description": "Endpoints for creating and managing learning roadmaps",
+      "item": [
+        {
+          "name": "Create Roadmap",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Frontend Development\",\n  \"description\": \"Learn modern frontend technologies\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/roadmap/create",
+              "host": ["{{base_url}}"],
+              "path": ["roadmap", "create"]
+            },
+            "description": "Create a new learning roadmap.\n\n**Authentication:** Required (JWT token)\n\n**Required fields:**\n- `title`: Roadmap title\n\n**Optional fields:**\n- `description`: Roadmap description\n\n**Response:** Returns created roadmap object\n\n**Note:** Progress tracking is automatically created for the roadmap"
+          },
+          "response": []
+        },
+        {
+          "name": "Get All My Roadmaps",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/roadmap/my",
+              "host": ["{{base_url}}"],
+              "path": ["roadmap", "my"]
+            },
+            "description": "Get all roadmaps created by the current user.\n\n**Authentication:** Required (JWT token)\n\n**Response:** Returns array of roadmap objects with their items"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Roadmap by ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/roadmap/:id",
+              "host": ["{{base_url}}"],
+              "path": ["roadmap", ":id"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1"
+                }
+              ]
+            },
+            "description": "Get roadmap by ID with all related items, tasks, resources, and documentation.\n\n**Authentication:** Required (JWT token)\n\n**Parameters:**\n- `id`: Roadmap ID\n\n**Response:** Returns roadmap object with:\n- Items (roadmap sections)\n- Tasks for each item\n- Resources for each item\n- Documentation for each item"
+          },
+          "response": []
+        },
+        {
+          "name": "Update Roadmap",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Updated Frontend Development\",\n  \"description\": \"Updated description\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/roadmap/:id",
+              "host": ["{{base_url}}"],
+              "path": ["roadmap", ":id"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1"
+                }
+              ]
+            },
+            "description": "Update roadmap information.\n\n**Authentication:** Required (JWT token)\n\n**Parameters:**\n- `id`: Roadmap ID\n\n**Optional fields:**\n- `title`: New roadmap title\n- `description`: New roadmap description\n\n**Response:** Returns updated roadmap object"
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Roadmap",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/roadmap/:id",
+              "host": ["{{base_url}}"],
+              "path": ["roadmap", ":id"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1"
+                }
+              ]
+            },
+            "description": "Delete a roadmap and all its related data.\n\n**Authentication:** Required (JWT token)\n\n**Parameters:**\n- `id`: Roadmap ID\n\n**Warning:** This will permanently delete:\n- Roadmap\n- All roadmap items\n- All tasks, resources, and documentation\n- Progress tracking data\n\n**Response:** Success message"
+          },
+          "response": []
+        },
+        {
+          "name": "Create Roadmap from AI",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Complete React Development Roadmap\",\n  \"description\": \"Master React from basics to advanced concepts\",\n  \"items\": [\n    {\n      \"title\": \"JavaScript Fundamentals\",\n      \"description\": \"Essential JavaScript concepts for React\",\n      \"order\": 1,\n      \"tasks\": [\n        {\n          \"title\": \"Practice ES6+ features\",\n          \"description\": \"Work with arrow functions, destructuring, and modules\"\n        }\n      ],\n      \"documentation\": [\n        {\n          \"title\": \"MDN JavaScript Guide\",\n          \"link\": \"https://developer.mozilla.org/en-US/docs/Web/JavaScript\"\n        }\n      ],\n      \"resources\": [\n        {\n          \"title\": \"JavaScript.info\",\n          \"link\": \"https://javascript.info/\"\n        }\n      ]\n    }\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/roadmap/create-from-ai",
+              "host": ["{{base_url}}"],
+              "path": ["roadmap", "create-from-ai"]
+            },
+            "description": "Create a complete roadmap with items, tasks, resources, and documentation in one request.\n\n**Authentication:** Required (JWT token)\n\n**Required fields:**\n- `title`: Roadmap title\n\n**Optional fields:**\n- `description`: Roadmap description\n- `items`: Array of roadmap items, each containing:\n  - `title`: Item title\n  - `description`: Item description\n  - `order`: Display order\n  - `tasks`: Array of tasks\n  - `resources`: Array of resources\n  - `documentation`: Array of documentation\n\n**Response:** Returns created roadmap with all items and related data"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "📋 Roadmap Items",
+      "description": "Endpoints for managing roadmap items (sections)",
+      "item": [
+        {
+          "name": "Create Roadmap Item",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"HTML & CSS Basics\",\n  \"description\": \"Learn the fundamentals of web markup\",\n  \"order\": 1\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/roadmap/:roadmapId/items",
+              "host": ["{{base_url}}"],
+              "path": ["roadmap", ":roadmapId", "items"],
+              "variable": [
+                {
+                  "key": "roadmapId",
+                  "value": "1"
+                }
+              ]
+            },
+            "description": "Create a new item (section) in a roadmap.\n\n**Authentication:** Required (JWT token)\n\n**Parameters:**\n- `roadmapId`: Roadmap ID\n\n**Required fields:**\n- `title`: Item title\n\n**Optional fields:**\n- `description`: Item description\n- `order`: Display order (auto-assigned if not provided)\n\n**Response:** Returns created roadmap item"
+          },
+          "response": []
+        },
+        {
+          "name": "Get All Roadmap Items",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/roadmap/:roadmapId/items",
+              "host": ["{{base_url}}"],
+              "path": ["roadmap", ":roadmapId", "items"],
+              "variable": [
+                {
+                  "key": "roadmapId",
+                  "value": "1"
+                }
+              ]
+            },
+            "description": "Get all items (sections) in a roadmap.\n\n**Authentication:** Required (JWT token)\n\n**Parameters:**\n- `roadmapId`: Roadmap ID\n\n**Response:** Returns array of roadmap items with their tasks, resources, and documentation, ordered by `order` field"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Roadmap Item by ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/roadmap/items/:id",
+              "host": ["{{base_url}}"],
+              "path": ["roadmap", "items", ":id"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1"
+                }
+              ]
+            },
+            "description": "Get a specific roadmap item by ID.\n\n**Authentication:** Required (JWT token)\n\n**Parameters:**\n- `id`: Roadmap item ID\n\n**Response:** Returns roadmap item with all related tasks, resources, and documentation"
+          },
+          "response": []
+        },
+        {
+          "name": "Update Roadmap Item",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Updated HTML & CSS\",\n  \"order\": 2\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/roadmap/items/:id",
+              "host": ["{{base_url}}"],
+              "path": ["roadmap", "items", ":id"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1"
+                }
+              ]
+            },
+            "description": "Update a roadmap item.\n\n**Authentication:** Required (JWT token)\n\n**Parameters:**\n- `id`: Roadmap item ID\n\n**Optional fields:**\n- `title`: New item title\n- `description`: New item description\n- `order`: New display order\n\n**Response:** Returns updated roadmap item"
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Roadmap Item",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/roadmap/items/:id",
+              "host": ["{{base_url}}"],
+              "path": ["roadmap", "items", ":id"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1"
+                }
+              ]
+            },
+            "description": "Delete a roadmap item and all its related data.\n\n**Authentication:** Required (JWT token)\n\n**Parameters:**\n- `id`: Roadmap item ID\n\n**Warning:** This will permanently delete:\n- Roadmap item\n- All tasks in the item\n- All resources in the item\n- All documentation in the item\n\n**Response:** Success message"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "✅ Task Management",
+      "description": "Endpoints for managing tasks and marking them as completed",
+      "item": [
+        {
+          "name": "Mark Task as Completed",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/roadmap/tasks/:id/mark-as-completed",
+              "host": ["{{base_url}}"],
+              "path": ["roadmap", "tasks", ":id", "mark-as-completed"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1"
+                }
+              ]
+            },
+            "description": "Mark a task as completed.\n\n**Authentication:** Required (JWT token)\n\n**Parameters:**\n- `id`: Task ID\n\n**Response:** Success message\n\n**Note:** Progress tracking is automatically updated when a task is marked as completed"
+          },
+          "response": []
+        },
+        {
+          "name": "Mark Task as Incomplete",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/roadmap/tasks/:id/mark-as-incomplete",
+              "host": ["{{base_url}}"],
+              "path": ["roadmap", "tasks", ":id", "mark-as-incomplete"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1"
+                }
+              ]
+            },
+            "description": "Mark a task as incomplete (unmark as completed).\n\n**Authentication:** Required (JWT token)\n\n**Parameters:**\n- `id`: Task ID\n\n**Response:** Success message\n\n**Note:** Progress tracking is automatically updated when a task is marked as incomplete"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "📚 Resource Management",
+      "description": "Endpoints for managing resources and marking them as completed",
+      "item": [
+        {
+          "name": "Mark Resource as Completed",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/roadmap/resource/:id/mark-as-completed",
+              "host": ["{{base_url}}"],
+              "path": ["roadmap", "resource", ":id", "mark-as-completed"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1"
+                }
+              ]
+            },
+            "description": "Mark a resource as completed.\n\n**Authentication:** Required (JWT token)\n\n**Parameters:**\n- `id`: Resource ID\n\n**Response:** Success message\n\n**Note:** Progress tracking is automatically updated when a resource is marked as completed"
+          },
+          "response": []
+        },
+        {
+          "name": "Mark Resource as Incomplete",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/roadmap/resource/:id/mark-as-incomplete",
+              "host": ["{{base_url}}"],
+              "path": ["roadmap", "resource", ":id", "mark-as-incomplete"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1"
+                }
+              ]
+            },
+            "description": "Mark a resource as incomplete (unmark as completed).\n\n**Authentication:** Required (JWT token)\n\n**Parameters:**\n- `id`: Resource ID\n\n**Response:** Success message\n\n**Note:** Progress tracking is automatically updated when a resource is marked as incomplete"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "📖 Documentation Management",
+      "description": "Endpoints for managing documentation and marking it as completed",
+      "item": [
+        {
+          "name": "Mark Documentation as Completed",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/roadmap/documentation/:id/mark-as-completed",
+              "host": ["{{base_url}}"],
+              "path": ["roadmap", "documentation", ":id", "mark-as-completed"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1"
+                }
+              ]
+            },
+            "description": "Mark documentation as completed.\n\n**Authentication:** Required (JWT token)\n\n**Parameters:**\n- `id`: Documentation ID\n\n**Response:** Success message\n\n**Note:** Progress tracking is automatically updated when documentation is marked as completed"
+          },
+          "response": []
+        },
+        {
+          "name": "Mark Documentation as Incomplete",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/roadmap/documentation/:id/mark-as-incomplete",
+              "host": ["{{base_url}}"],
+              "path": ["roadmap", "documentation", ":id", "mark-as-incomplete"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1"
+                }
+              ]
+            },
+            "description": "Mark documentation as incomplete (unmark as completed).\n\n**Authentication:** Required (JWT token)\n\n**Parameters:**\n- `id`: Documentation ID\n\n**Response:** Success message\n\n**Note:** Progress tracking is automatically updated when documentation is marked as incomplete"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "📊 Progress Tracking",
+      "description": "Endpoints for tracking learning progress on roadmaps",
+      "item": [
+        {
+          "name": "Get Roadmap Progress",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/progress/:roadmapId",
+              "host": ["{{base_url}}"],
+              "path": ["progress", ":roadmapId"],
+              "variable": [
+                {
+                  "key": "roadmapId",
+                  "value": "1"
+                }
+              ]
+            },
+            "description": "Get detailed progress information for a roadmap.\n\n**Authentication:** Required (JWT token)\n\n**Parameters:**\n- `roadmapId`: Roadmap ID\n\n**Response:** Returns progress object with:\n- `totalPercentage`: Overall completion percentage\n- `totalTasks`: Total number of tasks\n- `totalResources`: Total number of resources\n- `totalDocumentation`: Total number of documentation items\n- `tasksCompleted`: Number of completed tasks\n- `resourcesCompleted`: Number of completed resources\n- `documentationCompleted`: Number of completed documentation items\n- `tasksProgressPercentage`: Percentage of tasks completed\n- `resourcesProgressPercentage`: Percentage of resources completed\n- `documentationProgressPercentage`: Percentage of documentation completed\n- `roadmapItemsProgress`: Array of progress for each roadmap item\n\n**Note:** Progress is automatically recalculated on each request based on current task/resource/documentation completion status"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "🤖 AI Generation",
+      "description": "Endpoints for AI-powered roadmap generation",
+      "item": [
+        {
+          "name": "Generate Roadmap with AI",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"topic\": \"React Development\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/ai/generate-roadmap",
+              "host": ["{{base_url}}"],
+              "path": ["ai", "generate-roadmap"]
+            },
+            "description": "Generate a complete learning roadmap using AI.\n\n**Authentication:** Required (JWT token)\n\n**Required fields:**\n- `topic`: Topic or skill to learn (e.g., \"React Development\", \"Python Programming\")\n\n**Response:** Returns generated roadmap with:\n- Title and description\n- Multiple roadmap items (sections)\n- Tasks for each item\n- Resources for each item\n- Documentation for each item\n\n**Note:** The generated roadmap is automatically saved and associated with your account"
+          },
+          "response": []
+        }
+      ]
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "// Auto-add Authorization header if token exists",
+          "if (pm.collectionVariables.get('token')) {",
+          "    pm.request.headers.add({",
+          "        key: 'Authorization',",
+          "        value: 'Bearer ' + pm.collectionVariables.get('token')",
+          "    });",
+          "}"
+        ]
+      }
+    }
+  ]
+}

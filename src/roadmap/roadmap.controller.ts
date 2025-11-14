@@ -93,13 +93,28 @@ export class RoadmapController {
     return this.roadmapService.markTaskAsCompleted(id, req.user.id);
   }
 
+  @Patch('tasks/:id/mark-as-incomplete')
+  async markTaskAsIncomplete(@Req() req: any, @Param('id', ParseIntPipe) id: number) {
+    return this.roadmapService.markTaskAsIncomplete(id, req.user.id);
+  }
+
   @Patch('resource/:id/mark-as-completed')
-  async markSourseAsCompleted(@Req() req: any, @Param('id', ParseIntPipe) id: number) {
+  async markResourceAsCompleted(@Req() req: any, @Param('id', ParseIntPipe) id: number) {
     return this.roadmapService.markResourceAsCompleted(id, req.user.id);
+  }
+
+  @Patch('resource/:id/mark-as-incomplete')
+  async markResourceAsIncomplete(@Req() req: any, @Param('id', ParseIntPipe) id: number) {
+    return this.roadmapService.markResourceAsIncomplete(id, req.user.id);
   }
 
   @Patch('documentation/:id/mark-as-completed')
   async markDocumentationAsCompleted(@Req() req: any, @Param('id', ParseIntPipe) id: number) {
     return this.roadmapService.markDocumentationAsCompleted(id, req.user.id);
+  }
+
+  @Patch('documentation/:id/mark-as-incomplete')
+  async markDocumentationAsIncomplete(@Req() req: any, @Param('id', ParseIntPipe) id: number) {
+    return this.roadmapService.markDocumentationAsIncomplete(id, req.user.id);
   }
 }

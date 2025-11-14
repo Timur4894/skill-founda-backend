@@ -29,8 +29,7 @@ export class RoadmapService {
     private resourceRepository: Repository<Resource>,
     @InjectRepository(Progress)
     private progressRepository: Repository<Progress>,
-
-    // private progressService: ProgressService,
+    private progressService: ProgressService,
   ) {}
 
   // ========== ROADMAP METHODS ==========
@@ -231,34 +230,116 @@ export class RoadmapService {
 
   // ========== TASK METHODS ==========
   async markTaskAsCompleted(id: number, userId: string): Promise<{ message: string }> {
-    const task = await this.taskRepository.findOne({ where: { id, roadmapItem: { roadmap: { user: { id: userId } } } } });
+    const task = await this.taskRepository.findOne({ 
+      where: { id, roadmapItem: { roadmap: { user: { id: userId } } } },
+      relations: ['roadmapItem', 'roadmapItem.roadmap']
+    });
     if (!task) {
       throw new NotFoundException('Task not found');
     }
     task.completed = true;
     await this.taskRepository.save(task);
+    
+    // Обновляем прогресс роадмапа
+    if (task.roadmapItem?.roadmap?.id) {
+      await this.progressService.updateProgress(task.roadmapItem.roadmap.id);
+    }
+    
     return { message: 'Task marked as completed' };
+  }
+
+  async markTaskAsIncomplete(id: number, userId: string): Promise<{ message: string }> {
+    const task = await this.taskRepository.findOne({ 
+      where: { id, roadmapItem: { roadmap: { user: { id: userId } } } },
+      relations: ['roadmapItem', 'roadmapItem.roadmap']
+    });
+    if (!task) {
+      throw new NotFoundException('Task not found');
+    }
+    task.completed = false;
+    await this.taskRepository.save(task);
+    
+    // Обновляем прогресс роадмапа
+    if (task.roadmapItem?.roadmap?.id) {
+      await this.progressService.updateProgress(task.roadmapItem.roadmap.id);
+    }
+    
+    return { message: 'Task marked as incomplete' };
   }
 
   async markResourceAsCompleted(id: number, userId: string): Promise<{ message: string }> {
     const resource = await this.resourceRepository.findOne({ 
-      where: { id, roadmapItem: { roadmap: { user: { id: userId } } } } 
+      where: { id, roadmapItem: { roadmap: { user: { id: userId } } } },
+      relations: ['roadmapItem', 'roadmapItem.roadmap']
     });
     if (!resource) {
       throw new NotFoundException('Resource not found');
     }
     resource.completed = true;
     await this.resourceRepository.save(resource);
+    
+    // Обновляем прогресс роадмапа
+    if (resource.roadmapItem?.roadmap?.id) {
+      await this.progressService.updateProgress(resource.roadmapItem.roadmap.id);
+    }
+    
     return { message: 'Resource marked as completed' };
   }
 
+  async markResourceAsIncomplete(id: number, userId: string): Promise<{ message: string }> {
+    const resource = await this.resourceRepository.findOne({ 
+      where: { id, roadmapItem: { roadmap: { user: { id: userId } } } },
+      relations: ['roadmapItem', 'roadmapItem.roadmap']
+    });
+    if (!resource) {
+      throw new NotFoundException('Resource not found');
+    }
+    resource.completed = false;
+    await this.resourceRepository.save(resource);
+    
+    // Обновляем прогресс роадмапа
+    if (resource.roadmapItem?.roadmap?.id) {
+      await this.progressService.updateProgress(resource.roadmapItem.roadmap.id);
+    }
+    
+    return { message: 'Resource marked as incomplete' };
+  }
+
   async markDocumentationAsCompleted(id: number, userId: string): Promise<{ message: string }> {
-    const documentation = await this.documentationRepository.findOne({ where: { id, roadmapItem: { roadmap: { user: { id: userId } } } } });
+    const documentation = await this.documentationRepository.findOne({ 
+      where: { id, roadmapItem: { roadmap: { user: { id: userId } } } },
+      relations: ['roadmapItem', 'roadmapItem.roadmap']
+    });
     if (!documentation) {
       throw new NotFoundException('Documentation not found');
     }
     documentation.completed = true;
     await this.documentationRepository.save(documentation);
+    
+    // Обновляем прогресс роадмапа
+    if (documentation.roadmapItem?.roadmap?.id) {
+      await this.progressService.updateProgress(documentation.roadmapItem.roadmap.id);
+    }
+    
     return { message: 'Documentation marked as completed' };
+  }
+
+  async markDocumentationAsIncomplete(id: number, userId: string): Promise<{ message: string }> {
+    const documentation = await this.documentationRepository.findOne({ 
+      where: { id, roadmapItem: { roadmap: { user: { id: userId } } } },
+      relations: ['roadmapItem', 'roadmapItem.roadmap']
+    });
+    if (!documentation) {
+      throw new NotFoundException('Documentation not found');
+    }
+    documentation.completed = false;
+    await this.documentationRepository.save(documentation);
+    
+    // Обновляем прогресс роадмапа
+    if (documentation.roadmapItem?.roadmap?.id) {
+      await this.progressService.updateProgress(documentation.roadmapItem.roadmap.id);
+    }
+    
+    return { message: 'Documentation marked as incomplete' };
   }
 }

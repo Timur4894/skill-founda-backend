@@ -3,6 +3,7 @@ import { CreateAuthDto } from './dto/create-auth.dto';
 import { AuthService } from './auth.service';
 import { LoginAuthDto } from './dto/login-auth.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
+import { ResetPasswordWithTokenDto } from './dto/reset-password-with-token.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -21,5 +22,10 @@ export class AuthController {
     @Post('reset-password')
     resetPassword(@Body() resetPasswordDto: ResetPasswordDto) {
         return this.authService.resetPassword(resetPasswordDto);
+    }
+
+    @Post('reset-password-with-token')
+    resetPasswordWithToken(@Body() resetPasswordWithTokenDto: ResetPasswordWithTokenDto) {
+        return this.authService.resetPasswordWithToken(resetPasswordWithTokenDto);
     }
 }

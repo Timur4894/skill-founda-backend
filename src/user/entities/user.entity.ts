@@ -24,6 +24,12 @@ export class User {
     @Column()
     password: string;
 
+    @Column({ nullable: true, type: 'varchar' })
+    resetToken: string | null;
+
+    @Column({ nullable: true, type: 'timestamp' })
+    resetTokenExpiry: Date | null;
+
     @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' , name: 'created_at'})
     createdAt: Date;
 

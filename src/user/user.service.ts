@@ -60,6 +60,28 @@ export class UserService {
     return { message: 'Password updated successfully' };
   }
 
+  async updateResetToken(userId: string, resetToken: string, resetTokenExpiry: Date) {
+    await this.userRepository.update(userId, { 
+      resetToken, 
+      resetTokenExpiry 
+    });
+  }
+
+  async findByResetToken(token: string) {
+    return await this.userRepository.findOne({ 
+      where: { resetToken: token } 
+    });
+  }
+
+  async clearResetToken(userId: string) {
+    const user = await this.userRepository.findOne({ where: { id: userId } });
+    if (user) {
+      user.resetToken = null;
+      user.resetTokenExpiry = null;
+      await this.userRepository.save(user);
+    }
+  }
+
   async resetPassword(email: string, newPassword: string) {
     const user = await this.userRepository.findOne({where: {email}});
     if(!user) throw new NotFoundException('User not found');

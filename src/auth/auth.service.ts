@@ -5,7 +5,9 @@ import { JwtService } from '@nestjs/jwt';
 import { UserService } from '../user/user.service';
 import * as bcrypt from 'bcrypt';
 import { ResetPasswordDto } from './dto/reset-password.dto';
+import { ResetPasswordWithTokenDto } from './dto/reset-password-with-token.dto';
 import { EmailService } from '../shared/email.service';
+import * as crypto from 'crypto';
 
 @Injectable()
 export class AuthService {
@@ -53,13 +55,41 @@ export class AuthService {
         throw new BadRequestException('User with this email not found');
       }
   
-      const newPassword = Math.random().toString(36).slice(-8);
+      // Генерируем токен для сброса пароля
+      const resetToken = crypto.randomBytes(32).toString('hex');
+      const resetTokenExpiry = new Date();
+      resetTokenExpiry.setHours(resetTokenExpiry.getHours() + 1); // Токен действителен 1 час
   
+      // Сохраняем токен в БД
+      await this.userService.updateResetToken(user.id, resetToken, resetTokenExpiry);
+  
+      // Отправляем письмо с ссылкой для сброса пароля
+      await this.emailService.sendPasswordResetEmail(email, resetToken);
+  
+      return { message: 'Password reset link sent to your email' };
+    }
+
+    async resetPasswordWithToken(resetPasswordWithTokenDto: ResetPasswordWithTokenDto) {
+      const { token, newPassword } = resetPasswordWithTokenDto;
+  
+      // Находим пользователя по токену
+      const user = await this.userService.findByResetToken(token);
+      if (!user) {
+        throw new BadRequestException('Invalid or expired reset token');
+      }
+  
+      // Проверяем срок действия токена
+      if (user.resetTokenExpiry && new Date() > user.resetTokenExpiry) {
+        throw new BadRequestException('Reset token has expired');
+      }
+  
+      // Хешируем новый пароль
       const hashedPassword = await bcrypt.hash(newPassword, 10);
+      
+      // Обновляем пароль и очищаем токен
       await this.userService.updatePassword(user.id, hashedPassword);
+      await this.userService.clearResetToken(user.id);
   
-      await this.emailService.sendPasswordResetEmail(email, newPassword);
-  
-      return { message: 'New password sent to your email' };
+      return { message: 'Password has been reset successfully' };
     }
 }
